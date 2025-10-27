@@ -39,7 +39,7 @@ sim: $(SIM_OBJ)
 # type "make clean" to remove all .o files plus the sim binary
 
 clean:
-	rm -f *.o sim
+	del *.o sim
 
 
 # type "make clobber" to remove all .o files (leaves sim binary)
