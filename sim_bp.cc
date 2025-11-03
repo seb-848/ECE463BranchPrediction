@@ -32,7 +32,7 @@ bool Bimodal::prediction(uint64_t addr) {
 }
 
 void Bimodal::update_table(uint64_t addr, char result) {
-    bool taken = false;
+    //bool taken = false;
     uint32_t index = (addr >> LSB_2) & ((1 << params.M2) - 1);
     // update miss count
     if ((result == 't' && !current_prediction) || (result == 'n' && current_prediction)) {
@@ -141,7 +141,7 @@ int main (int argc, char* argv[])
         /*************************************
             Add branch predictor code here
         **************************************/
-        
+
     }
     return 0;
 }
