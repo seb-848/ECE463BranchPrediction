@@ -48,9 +48,9 @@ class Bimodal {
     void update_table(uint64_t addr, char result);
     //bool prediction_result()
 };
-class gshare {
+// class gshare {
 
-};
+// };
 
 // Put additional data structures here as per your requirement
 
