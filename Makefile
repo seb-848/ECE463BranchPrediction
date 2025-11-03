@@ -3,7 +3,7 @@ OPT = -O3
 #OPT = -g
 WARN = -Wall
 # You can select a C++ standard using the STD define below.  To do so, uncomment (remove leading #) and adjust the standard as needed.
-#STD = -std=c++11
+STD = -std=c++17
 CFLAGS = $(OPT) $(WARN) $(STD) $(INC) $(LIB)
 
 # List all your .cc/.cpp files here (source files, excluding header files)
