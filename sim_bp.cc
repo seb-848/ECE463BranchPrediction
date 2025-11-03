@@ -31,29 +31,29 @@ bool Bimodal::prediction(uint64_t addr) {
     return current_prediction;
 }
 
-void Bimodal::update_table(uint64_t addr, char result) {
+void Bimodal::update_table(uint64_t addr, char result[2]) {
     //bool taken = false;
     uint32_t index = (addr >> LSB_2) & ((1 << params.M2) - 1);
     // update miss count
-    if ((result == 't' && !current_prediction) || (result == 'n' && current_prediction)) {
+    if ((result[0] == 't' && !current_prediction) || (result[0] == 'n' && current_prediction)) {
         num_miss++;
     }
 
     //update table
     switch(ptable[index]) {
         case STRONG_NOT:
-        if (result == 't') ptable[index]++;
+        if (result[0] == 't') ptable[index]++;
         break;
         case WEAK_NOT:
-        if (result == 't') ptable[index]++;
+        if (result[0] == 't') ptable[index]++;
         else ptable[index]--;
         break;
         case WEAK_TAKE:
-        if (result == 't') ptable[index]++;
+        if (result[0] == 't') ptable[index]++;
         else ptable[index]--;
         break;
         case 3:
-        if (result == 'n') ptable[index]--;
+        if (result[0] == 'n') ptable[index]--;
         break;
     }
 }
@@ -76,7 +76,7 @@ int main (int argc, char* argv[])
     bp_params params;       // look at sim_bp.h header file for the the definition of struct bp_params
     char outcome;           // Variable holds branch outcome
     unsigned long int addr; // Variable holds the address read from input file
-    
+    Bimodal* bimodal_pred = nullptr;
     if (!(argc == 4 || argc == 5 || argc == 7))
     {
         printf("Error: Wrong number of inputs:%d\n", argc-1);
@@ -96,6 +96,9 @@ int main (int argc, char* argv[])
         params.M2       = strtoul(argv[2], NULL, 10);
         trace_file      = argv[3];
         printf("COMMAND\n%s %s %lu %s\n", argv[0], params.bp_name, params.M2, trace_file);
+
+        // bimodal object creation
+        bimodal_pred = new Bimodal(params);
     }
     else if(strcmp(params.bp_name, "gshare") == 0)          // Gshare
     {
@@ -152,6 +155,16 @@ int main (int argc, char* argv[])
         /*************************************
             Add branch predictor code here
         **************************************/
+        if(strcmp(params.bp_name, "bimodal") == 0) {
+            bimodal_pred->prediction(addr);
+            bimodal_pred->update_table(addr, str);
+        }
+        else if (strcmp(params.bp_name, "gshare") == 0) break;
     }
+
+    if(strcmp(params.bp_name, "bimodal") == 0) {
+        printf("predictions: %d\n", bimodal_pred->num_predictions);
+    }
+    
     return 0;
 }

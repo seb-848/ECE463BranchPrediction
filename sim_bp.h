@@ -45,7 +45,7 @@ class Bimodal {
     }
 
     bool prediction(uint64_t addr);
-    void update_table(uint64_t addr, char result);
+    void update_table(uint64_t addr, char result[2]);
     //bool prediction_result()
 };
 // class gshare {
