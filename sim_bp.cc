@@ -16,11 +16,11 @@
     ... and so on
 */
 
-// const uint8_t STRONG_NOT = 0;
-// const uint8_t WEAK_NOT = 1;
-// const uint8_t WEAK_TAKE = 2;
-// const uint8_t STRONG_TAKE = 3;
-// const uint8_t LSB_2 = 2;
+const uint8_t STRONG_NOT = 0;
+const uint8_t WEAK_NOT = 1;
+const uint8_t WEAK_TAKE = 2;
+const uint8_t STRONG_TAKE = 3;
+const uint8_t LSB_2 = 2;
 
 // bool Bimodal::prediction(uint64_t addr) {
 //     //bool taken = 0;
