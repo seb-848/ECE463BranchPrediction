@@ -1,4 +1,4 @@
-#include <cstdint>
+//#include <cstdint>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -16,11 +16,11 @@
     ... and so on
 */
 
-const uint8_t STRONG_NOT = 0;
-const uint8_t WEAK_NOT = 1;
-const uint8_t WEAK_TAKE = 2;
-const uint8_t STRONG_TAKE = 3;
-const uint8_t LSB_2 = 2;
+// const uint8_t STRONG_NOT = 0;
+// const uint8_t WEAK_NOT = 1;
+// const uint8_t WEAK_TAKE = 2;
+// const uint8_t STRONG_TAKE = 3;
+// const uint8_t LSB_2 = 2;
 
 // bool Bimodal::prediction(uint64_t addr) {
 //     //bool taken = 0;
@@ -58,6 +58,17 @@ const uint8_t LSB_2 = 2;
 //     }
 // }
 
+/*  argc holds the number of command line arguments
+    argv[] holds the commands themselves
+
+    Example:-
+    sim bimodal 6 gcc_trace.txt
+    argc = 4
+    argv[0] = "sim"
+    argv[1] = "bimodal"
+    argv[2] = "6"
+    ... and so on
+*/
 int main (int argc, char* argv[])
 {
     FILE *FP;               // File handler
@@ -141,7 +152,6 @@ int main (int argc, char* argv[])
         /*************************************
             Add branch predictor code here
         **************************************/
-
     }
     return 0;
 }

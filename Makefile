@@ -3,7 +3,7 @@ OPT = -O3
 #OPT = -g
 WARN = -Wall
 # You can select a C++ standard using the STD define below.  To do so, uncomment (remove leading #) and adjust the standard as needed.
-STD = -std=c++17
+#STD = -std=c++11
 CFLAGS = $(OPT) $(WARN) $(STD) $(INC) $(LIB)
 
 # List all your .cc/.cpp files here (source files, excluding header files)
@@ -39,12 +39,10 @@ sim: $(SIM_OBJ)
 # type "make clean" to remove all .o files plus the sim binary
 
 clean:
-	rm -f *.o sim
-# del *.o sim
+	del *.o sim
+
 
 # type "make clobber" to remove all .o files (leaves sim binary)
 
 clobber:
 	rm -f *.o
-
-
