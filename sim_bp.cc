@@ -1,3 +1,4 @@
+#include <cstdint>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -14,6 +15,49 @@
     argv[2] = "6"
     ... and so on
 */
+
+const uint8_t STRONG_NOT = 0;
+const uint8_t WEAK_NOT = 1;
+const uint8_t WEAK_TAKE = 2;
+const uint8_t STRONG_TAKE = 3;
+const uint8_t LSB_2 = 2;
+
+bool Bimodal::prediction(uint64_t addr) {
+    //bool taken = 0;
+    uint32_t index = (addr >> LSB_2) & ((1 << params.M2) - 1);
+    if (ptable.at(index) >= WEAK_TAKE) current_prediction = true;
+    else current_prediction = false;
+    num_predictions++;
+    return current_prediction;
+}
+
+void Bimodal::update_table(uint64_t addr, char result) {
+    bool taken = false;
+    uint32_t index = (addr >> LSB_2) & ((1 << params.M2) - 1);
+    // update miss count
+    if ((result == 't' && !current_prediction) || (result == 'n' && current_prediction)) {
+        num_miss++;
+    }
+
+    //update table
+    switch(ptable[index]) {
+        case STRONG_NOT:
+        if (result == 't') ptable[index]++;
+        break;
+        case WEAK_NOT:
+        if (result == 't') ptable[index]++;
+        else ptable[index]--;
+        break;
+        case WEAK_TAKE:
+        if (result == 't') ptable[index]++;
+        else ptable[index]--;
+        break;
+        case 3:
+        if (result == 'n') ptable[index]--;
+        break;
+    }
+}
+
 int main (int argc, char* argv[])
 {
     FILE *FP;               // File handler
