@@ -1,5 +1,5 @@
 CC = g++
-OPT = -O3
+OPT = -g -O3
 #OPT = -g
 WARN = -Wall
 # You can select a C++ standard using the STD define below.  To do so, uncomment (remove leading #) and adjust the standard as needed.
