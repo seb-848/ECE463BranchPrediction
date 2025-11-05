@@ -17,7 +17,7 @@ class Bimodal {
     bp_params params;
     int num_predictions;
     int num_miss;
-    int miss_rate;
+    float miss_rate;
     std::vector<uint8_t> ptable;
     bool current_prediction;
 

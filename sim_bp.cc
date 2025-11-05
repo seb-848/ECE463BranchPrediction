@@ -155,7 +155,12 @@ int main (int argc, char* argv[])
     if(strcmp(params.bp_name, "bimodal") == 0) {
         printf("number of predictions: %d\n", bimodal_pred->num_predictions);
         printf("number of mispredictions: %d\n", bimodal_pred->num_miss);
-        printf("misprediction rate: %f", bimodal_pred->miss_rate);
+        bimodal_pred->miss_rate = ((float)bimodal_pred->num_miss / bimodal_pred->num_predictions) * 100;
+        printf("misprediction rate: %.2f%\n", bimodal_pred->miss_rate);
+        printf("FINAL BIMODAL CONTENTS\n");
+        for (int i = 0; i < bimodal_pred->ptable.size(); i++) {
+            printf("%d	%d\n", i, bimodal_pred->ptable[i]);
+        }
     }
     
     return 0;
