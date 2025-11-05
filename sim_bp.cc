@@ -22,53 +22,43 @@ const uint8_t WEAK_TAKE = 2;
 const uint8_t STRONG_TAKE = 3;
 const uint8_t LSB_2 = 2;
 
-// bool Bimodal::prediction(uint64_t addr) {
-//     //bool taken = 0;
-//     uint32_t index = (addr >> LSB_2) & ((1 << params.M2) - 1);
-//     if (ptable.at(index) >= WEAK_TAKE) current_prediction = true;
-//     else current_prediction = false;
-//     num_predictions++;
-//     return current_prediction;
-// }
+bool Bimodal::prediction(uint64_t addr) {
+    //bool taken = 0;
+    uint32_t index = (addr >> LSB_2) & ((1 << params.M2) - 1);
+    if (ptable.at(index) >= WEAK_TAKE) current_prediction = true;
+    else current_prediction = false;
+    num_predictions++;
+    return current_prediction;
+}
 
-// void Bimodal::update_table(uint64_t addr, char result[2]) {
-//     //bool taken = false;
-//     uint32_t index = (addr >> LSB_2) & ((1 << params.M2) - 1);
-//     // update miss count
-//     if ((result[0] == 't' && !current_prediction) || (result[0] == 'n' && current_prediction)) {
-//         num_miss++;
-//     }
+void Bimodal::update_table(uint64_t addr, char result[2]) {
+    //bool taken = false;
+    uint32_t index = (addr >> LSB_2) & ((1 << params.M2) - 1);
+    // update miss count
+    if ((result[0] == 't' && !current_prediction) || (result[0] == 'n' && current_prediction)) {
+        num_miss++;
+    }
 
-//     //update table
-//     switch(ptable[index]) {
-//         case STRONG_NOT:
-//         if (result[0] == 't') ptable[index]++;
-//         break;
-//         case WEAK_NOT:
-//         if (result[0] == 't') ptable[index]++;
-//         else ptable[index]--;
-//         break;
-//         case WEAK_TAKE:
-//         if (result[0] == 't') ptable[index]++;
-//         else ptable[index]--;
-//         break;
-//         case 3:
-//         if (result[0] == 'n') ptable[index]--;
-//         break;
-//     }
-// }
+    //update table
+    switch(ptable[index]) {
+        case STRONG_NOT:
+        if (result[0] == 't') ptable[index]++;
+        break;
+        case WEAK_NOT:
+        if (result[0] == 't') ptable[index]++;
+        else ptable[index]--;
+        break;
+        case WEAK_TAKE:
+        if (result[0] == 't') ptable[index]++;
+        else ptable[index]--;
+        break;
+        case 3:
+        if (result[0] == 'n') ptable[index]--;
+        break;
+    }
+}
 
-/*  argc holds the number of command line arguments
-    argv[] holds the commands themselves
 
-    Example:-
-    sim bimodal 6 gcc_trace.txt
-    argc = 4
-    argv[0] = "sim"
-    argv[1] = "bimodal"
-    argv[2] = "6"
-    ... and so on
-*/
 int main (int argc, char* argv[])
 {
     FILE *FP;               // File handler
@@ -76,7 +66,7 @@ int main (int argc, char* argv[])
     bp_params params;       // look at sim_bp.h header file for the the definition of struct bp_params
     char outcome;           // Variable holds branch outcome
     unsigned long int addr; // Variable holds the address read from input file
-    //Bimodal* bimodal_pred = nullptr;
+    Bimodal* bimodal_pred = nullptr;
     if (!(argc == 4 || argc == 5 || argc == 7))
     {
         printf("Error: Wrong number of inputs:%d\n", argc-1);
@@ -98,7 +88,7 @@ int main (int argc, char* argv[])
         printf("COMMAND\n%s %s %lu %s\n", argv[0], params.bp_name, params.M2, trace_file);
 
         // bimodal object creation
-        //bimodal_pred = new Bimodal(params);
+        bimodal_pred = new Bimodal(params);
     }
     else if(strcmp(params.bp_name, "gshare") == 0)          // Gshare
     {
@@ -147,24 +137,24 @@ int main (int argc, char* argv[])
     while(fscanf(FP, "%lx %s", &addr, str) != EOF)
     {
         
-        outcome = str[0];
-        if (outcome == 't')
-            printf("%lx %s\n", addr, "t");           // Print and test if file is read correctly
-        else if (outcome == 'n')
-            printf("%lx %s\n", addr, "n");          // Print and test if file is read correctly
+        // outcome = str[0];
+        // if (outcome == 't')
+        //     printf("%lx %s\n", addr, "t");           // Print and test if file is read correctly
+        // else if (outcome == 'n')
+        //     printf("%lx %s\n", addr, "n");          // Print and test if file is read correctly
         /*************************************
             Add branch predictor code here
         **************************************/
-        // if(strcmp(params.bp_name, "bimodal") == 0) {
-        //     bimodal_pred->prediction(addr);
-        //     bimodal_pred->update_table(addr, str);
-        // }
-        // else if (strcmp(params.bp_name, "gshare") == 0) break;
+        if(strcmp(params.bp_name, "bimodal") == 0) {
+            bimodal_pred->prediction(addr);
+            bimodal_pred->update_table(addr, str);
+        }
+        else if (strcmp(params.bp_name, "gshare") == 0) break;
     }
 
-    // if(strcmp(params.bp_name, "bimodal") == 0) {
-    //     printf("predictions: %d\n", bimodal_pred->num_predictions);
-    // }
+    if(strcmp(params.bp_name, "bimodal") == 0) {
+        printf("predictions: %d\n", bimodal_pred->num_predictions);
+    }
     
     return 0;
 }
