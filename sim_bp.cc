@@ -151,9 +151,11 @@ int main (int argc, char* argv[])
         }
         else if (strcmp(params.bp_name, "gshare") == 0) break;
     }
-
+    printf("OUTPUT\n");
     if(strcmp(params.bp_name, "bimodal") == 0) {
-        printf("predictions: %d\n", bimodal_pred->num_predictions);
+        printf("number of predictions: %d\n", bimodal_pred->num_predictions);
+        printf("number of mispredictions: %d\n", bimodal_pred->num_miss);
+        printf("misprediction rate: %f", bimodal_pred->miss_rate);
     }
     
     return 0;
