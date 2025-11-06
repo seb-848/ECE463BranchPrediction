@@ -1,4 +1,5 @@
 //#include <cstdint>
+#include <cstdint>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -22,7 +23,7 @@ const uint8_t WEAK_TAKE = 2;
 const uint8_t STRONG_TAKE = 3;
 const uint8_t LSB_2 = 2;
 
-bool Bimodal::prediction(uint64_t addr) {
+bool Bimodal::prediction_bimodal(uint64_t addr) {
     //bool taken = 0;
     uint32_t index = (addr >> LSB_2) & ((1 << params.M2) - 1);
     if (ptable.at(index) >= WEAK_TAKE) current_prediction = true;
@@ -31,9 +32,44 @@ bool Bimodal::prediction(uint64_t addr) {
     return current_prediction;
 }
 
-void Bimodal::update_table(uint64_t addr, char result[2]) {
+bool Gshare::prediction_gshare(uint64_t addr) {
+    uint32_t index = (addr >> LSB_2) & ((1 << params.M1) - 1) >> (params.M1 - params.N) ^ ghr;
+    if (ptable.at(index) >= WEAK_TAKE) current_prediction = true;
+    else current_prediction = false;
+    num_predictions++;
+    return current_prediction;
+}
+
+void Bimodal::update_table_bimodal(uint64_t addr, char result[2]) {
     //bool taken = false;
     uint32_t index = (addr >> LSB_2) & ((1 << params.M2) - 1);
+    // update miss count
+    if ((result[0] == 't' && !current_prediction) || (result[0] == 'n' && current_prediction)) {
+        num_miss++;
+    }
+
+    //update table
+    switch(ptable[index]) {
+        case STRONG_NOT:
+        if (result[0] == 't') ptable[index]++;
+        break;
+        case WEAK_NOT:
+        if (result[0] == 't') ptable[index]++;
+        else ptable[index]--;
+        break;
+        case WEAK_TAKE:
+        if (result[0] == 't') ptable[index]++;
+        else ptable[index]--;
+        break;
+        case 3:
+        if (result[0] == 'n') ptable[index]--;
+        break;
+    }
+}
+
+void Gshare::update_table_gshare(uint64_t addr, char result[2]) {
+    //bool taken = false;
+    uint32_t index = (addr >> LSB_2) & ((1 << params.M1) - 1) >> (params.M1 - params.N) ^ ghr;
     // update miss count
     if ((result[0] == 't' && !current_prediction) || (result[0] == 'n' && current_prediction)) {
         num_miss++;
@@ -67,6 +103,7 @@ int main (int argc, char* argv[])
     char outcome;           // Variable holds branch outcome
     unsigned long int addr; // Variable holds the address read from input file
     Bimodal* bimodal_pred = nullptr;
+    Gshare* gshare_pred = nullptr;
     if (!(argc == 4 || argc == 5 || argc == 7))
     {
         printf("Error: Wrong number of inputs:%d\n", argc-1);
@@ -101,6 +138,9 @@ int main (int argc, char* argv[])
         params.N        = strtoul(argv[3], NULL, 10);
         trace_file      = argv[4];
         printf("COMMAND\n%s %s %lu %lu %s\n", argv[0], params.bp_name, params.M1, params.N, trace_file);
+
+        // gshare object
+        gshare_pred = new Gshare(params);
 
     }
     else if(strcmp(params.bp_name, "hybrid") == 0)          // Hybrid
@@ -146,8 +186,8 @@ int main (int argc, char* argv[])
             Add branch predictor code here
         **************************************/
         if(strcmp(params.bp_name, "bimodal") == 0) {
-            bimodal_pred->prediction(addr);
-            bimodal_pred->update_table(addr, str);
+            bimodal_pred->prediction_bimodal(addr);
+            bimodal_pred->update_table_bimodal(addr, str);
         }
         else if (strcmp(params.bp_name, "gshare") == 0) break;
     }
@@ -156,10 +196,20 @@ int main (int argc, char* argv[])
         printf("number of predictions: %d\n", bimodal_pred->num_predictions);
         printf("number of mispredictions: %d\n", bimodal_pred->num_miss);
         bimodal_pred->miss_rate = ((float)bimodal_pred->num_miss / bimodal_pred->num_predictions) * 100;
-        printf("misprediction rate: %.2f%\n", bimodal_pred->miss_rate);
+        printf("misprediction rate: %.2f%%\n", bimodal_pred->miss_rate);
         printf("FINAL BIMODAL CONTENTS\n");
         for (int i = 0; i < bimodal_pred->ptable.size(); i++) {
             printf("%d	%d\n", i, bimodal_pred->ptable[i]);
+        }
+    }
+    else {
+        printf("number of predictions: %d\n", gshare_pred->num_predictions);
+        printf("number of mispredictions: %d\n", gshare_pred->num_miss);
+        gshare_pred->miss_rate = ((float)gshare_pred->num_miss / gshare_pred->num_predictions) * 100;
+        printf("misprediction rate: %.2f%%\n", gshare_pred->miss_rate);
+        printf("FINAL BIMODAL CONTENTS\n");
+        for (int i = 0; i < gshare_pred->ptable.size(); i++) {
+            printf("%d	%d\n", i, gshare_pred->ptable[i]);
         }
     }
     

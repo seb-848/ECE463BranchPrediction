@@ -44,13 +44,48 @@ class Bimodal {
         ptable.resize(1 << input.M2, 2);
     }
 
-    bool prediction(uint64_t addr);
-    void update_table(uint64_t addr, char result[2]);
+    bool prediction_bimodal(uint64_t addr);
+    void update_table_bimodal(uint64_t addr, char result[2]);
     //bool prediction_result()
 };
-// class gshare {
+class Gshare {
+    public:
+    bp_params params;
+    int num_predictions;
+    int num_miss;
+    float miss_rate;
+    std::vector<uint8_t> ptable;
+    bool current_prediction;
+    uint32_t ghr;
 
-// };
+    Gshare() {
+        params.K = 0;
+        params.M1 = 0;
+        params.M2 = 0;
+        params.N = 0;
+        params.bp_name = nullptr;
+        num_predictions = 0;
+        num_miss = 0;
+        miss_rate = 0;
+        ghr = 0;
+    }
+
+    Gshare(bp_params input) {
+        params.K = input.K;
+        params.M1 = input.M1;
+        params.M2 = input.M2;
+        params.N = input.N;
+        params.bp_name = input.bp_name;
+        num_predictions = 0;
+        num_miss = 0;
+        miss_rate = 0;
+        ptable.resize(1 << input.M2, 2);
+        ghr = 0;
+    }
+
+    bool prediction_gshare(uint64_t addr);
+    void update_table_gshare(uint64_t addr, char result[2]);
+};
 
 // Put additional data structures here as per your requirement
 
