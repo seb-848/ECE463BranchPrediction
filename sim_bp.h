@@ -79,7 +79,7 @@ class Gshare {
         num_predictions = 0;
         num_miss = 0;
         miss_rate = 0;
-        ptable.resize(1 << input.M2, 2);
+        ptable.resize(1 << input.M1, 2);
         ghr = 0;
     }
 
