@@ -221,7 +221,7 @@ int main (int argc, char* argv[])
         printf("number of mispredictions: %d\n", gshare_pred->num_miss);
         gshare_pred->miss_rate = ((float)gshare_pred->num_miss / gshare_pred->num_predictions) * 100;
         printf("misprediction rate: %.2f%%\n", gshare_pred->miss_rate);
-        printf("FINAL BIMODAL CONTENTS\n");
+        printf("FINAL GSHARE CONTENTS\n");
         for (uint32_t i = 0; i < gshare_pred->ptable.size(); i++) {
             printf("%d	%d\n", i, gshare_pred->ptable[i]);
         }
