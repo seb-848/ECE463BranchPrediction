@@ -56,7 +56,7 @@ class Gshare {
     float miss_rate;
     std::vector<uint8_t> ptable;
     bool current_prediction;
-    uint32_t ghr;
+    unsigned int ghr;
 
     Gshare() {
         params.K = 0;

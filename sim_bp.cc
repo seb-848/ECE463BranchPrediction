@@ -33,7 +33,9 @@ bool Bimodal::prediction_bimodal(uint64_t addr) {
 }
 
 bool Gshare::prediction_gshare(uint64_t addr) {
-    uint32_t index = (addr >> LSB_2) & ((1 << params.M1) - 1) >> (params.M1 - params.N) ^ ghr;
+    uint32_t pc_index = (addr >> LSB_2) & ((1 << params.M1) - 1);
+    uint32_t xor_operation = (pc_index >> (params.M1 - params.N)) ^ (ghr & ((1u << params.N) - 1));
+    uint32_t index = (xor_operation << (params.M1 - params.N)) | (pc_index & ((1u << (params.M1 - params.N)) - 1));
     if (ptable.at(index) >= WEAK_TAKE) current_prediction = true;
     else current_prediction = false;
     num_predictions++;
@@ -70,7 +72,9 @@ void Bimodal::update_table_bimodal(uint64_t addr, char result[2]) {
 void Gshare::update_table_gshare(uint64_t addr, char result[2]) {
     int taken = 0;
     //bool taken = false;
-    uint32_t index = (addr >> LSB_2) & ((1 << params.M1) - 1) >> (params.M1 - params.N) ^ ghr;
+    uint32_t pc_index = (addr >> LSB_2) & ((1 << params.M1) - 1);
+    uint32_t xor_operation = (pc_index >> (params.M1 - params.N)) ^ (ghr & ((1u << params.N) - 1));
+    uint32_t index = (xor_operation << (params.M1 - params.N)) | (pc_index & ((1u << (params.M1 - params.N)) - 1));
     if (result[0] == 't') taken = 1;
     
     // update miss count
@@ -98,6 +102,7 @@ void Gshare::update_table_gshare(uint64_t addr, char result[2]) {
 
     ghr = (ghr >> 1) | (taken << (params.N - 1));
     ghr &= (1 << params.N) - 1;
+    //printf("ghr: %d", ghr);
 }
 
 
