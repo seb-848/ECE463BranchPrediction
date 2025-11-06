@@ -68,8 +68,11 @@ void Bimodal::update_table_bimodal(uint64_t addr, char result[2]) {
 }
 
 void Gshare::update_table_gshare(uint64_t addr, char result[2]) {
+    int taken = 0;
     //bool taken = false;
     uint32_t index = (addr >> LSB_2) & ((1 << params.M1) - 1) >> (params.M1 - params.N) ^ ghr;
+    if (result[0] == 't') taken = 1;
+    
     // update miss count
     if ((result[0] == 't' && !current_prediction) || (result[0] == 'n' && current_prediction)) {
         num_miss++;
@@ -92,6 +95,9 @@ void Gshare::update_table_gshare(uint64_t addr, char result[2]) {
         if (result[0] == 'n') ptable[index]--;
         break;
     }
+
+    ghr = (ghr >> 1) | (taken << (params.N - 1));
+    ghr &= (1 << params.N) - 1;
 }
 
 
@@ -189,7 +195,10 @@ int main (int argc, char* argv[])
             bimodal_pred->prediction_bimodal(addr);
             bimodal_pred->update_table_bimodal(addr, str);
         }
-        else if (strcmp(params.bp_name, "gshare") == 0) break;
+        else if (strcmp(params.bp_name, "gshare") == 0) {
+            gshare_pred->prediction_gshare(addr);
+            gshare_pred->update_table_gshare(addr, str);
+        }
     }
     printf("OUTPUT\n");
     if(strcmp(params.bp_name, "bimodal") == 0) {
