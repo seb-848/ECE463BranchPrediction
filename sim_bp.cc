@@ -217,6 +217,7 @@ int main (int argc, char* argv[])
         }
     }
     else {
+        //printf("m1: %lu\n", params.M1);
         printf("number of predictions: %d\n", gshare_pred->num_predictions);
         printf("number of mispredictions: %d\n", gshare_pred->num_miss);
         gshare_pred->miss_rate = ((float)gshare_pred->num_miss / gshare_pred->num_predictions) * 100;
